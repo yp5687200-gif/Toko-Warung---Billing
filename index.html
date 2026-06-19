@@ -229,7 +229,7 @@
                             <table class="table table-sm table-hover align-middle mb-0" id="reportItemsTable" style="font-size: 12px;">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Produk Terjual (Nama Sama Digabung)</th>
+                                        <th>Produk Terjual (Produk)</th>
                                         <th class="text-end">Omzet</th>
                                         <th class="text-end">Untung</th>
                                     </tr>
@@ -417,4 +417,51 @@ function updateCart() {
     let total = 0;
     cart.forEach((item, index) => {
         let subtotal = item.price * item.qty;
- 
+             let totalModal = (item.cost || 0) * item.qty;
+            let untung Bersih = subtotal - totalModal;
+
+            totalOmzet += subtotal;
+            totalProfit += untungBersih;
+
+            let namaNormal = item.name.trim();
+            if (!groupedLaporan[namaNormal]) {
+                groupedLaporan[namaNormal] = {
+                    totalQty: 0,
+                    omzet: 0,
+                    profit: 0,
+                    price: item.price
+                };
+            }
+            groupedLaporan[namaNormal].totalQty += item.qty;
+            groupedLaporan[namaNormal].omzet += subtotal;
+            groupedLaporan[namaNormal].profit += untungBersih;
+        });
+    });
+
+    document.getElementById('displayOmzet').innerText = 'Rp ' + totalOmzet.toLocaleString('id-ID');
+    document.getElementById('displayProfit').innerText = 'Rp ' + totalProfit.toLocaleString('id-ID');
+
+    let reportTbody = document.querySelector('#reportItemsTable tbody');
+    reportTbody.innerHTML = '';
+
+    for (let namaProduk in groupedLaporan) {
+        let rincian = groupedLaporan[namaProduk];
+        reportTbody.innerHTML += `
+            <tr>
+                <td>
+                    <strong>${namaProduk}</strong><br>
+                    <span class="text-muted">${rincian.totalQty} Pcs @Rp ${rincian.price.toLocaleString('id-ID')}</span>
+                </td>
+                <td class="text-end fw-bold text-primary">Rp ${rincian.omzet.toLocaleString('id-ID')}</td>
+                <td class="text-end fw-bold text-success">Rp ${rincian.profit.toLocaleString('id-ID')}</td>
+            </tr>
+        `;
+    }
+}
+
+window.onload = function() {
+    updateTables();
+};
+</script>
+</body>
+</html>
